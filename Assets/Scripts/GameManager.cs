@@ -6,11 +6,11 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    public List<GameObject> animalPrefabs; // 存储动物Prefabs的列表
-    public float spawnRangeX = 10f; // X轴上的生成范围
-    public float spawnRangeZ = 10f; // Z轴上的生成范围
-    public float playerMoney; // 玩家的金钱
-    public TextMeshProUGUI moneyText; // TMP Text对象的引用
+    public List<GameObject> animalPrefabs; // Animal Prefabs
+    public Transform animalSpawnPoint; // Animal spawn position
+    public float spawnRange = 10f; // Animal spawn range offset
+    public float playerMoney; // Player Money
+    public TextMeshProUGUI moneyText; // Player Money Text
 
     void Awake()
     {
@@ -32,31 +32,31 @@ public class GameManager : MonoBehaviour
 
     public void BuyAnimal(int cost)
     {
-        // 检查玩家是否有足够的金钱购买动物
         if (playerMoney >= cost)
         {
-            playerMoney -= cost; // 减少玩家的金钱
-            SpawnAnimal(); // 购买成功后生成动物
+            playerMoney -= cost;
+            SpawnAnimal();
         }
         else
         {
-            Debug.Log("没有足够的金钱购买这个动物。");
+            Debug.Log("????????????????????????????");
         }
     }
 
     void SpawnAnimal()
     {
-        if (animalPrefabs.Count > 0)
+        if (animalPrefabs.Count > 0 && animalSpawnPoint != null)
         {
-            // 从列表中随机选择一个Prefab
             int index = Random.Range(0, animalPrefabs.Count);
             GameObject animalPrefab = animalPrefabs[index];
 
-            // 随机生成位置
-            Vector3 spawnPos = new Vector3(Random.Range(-spawnRangeX, spawnRangeX), 0, Random.Range(-spawnRangeZ, spawnRangeZ));
+            // Calculate spawn position around the specified spawn point
+            Vector3 spawnPos = new Vector3(
+                animalSpawnPoint.position.x + Random.Range(-spawnRange, spawnRange),
+                animalSpawnPoint.position.y, // Assuming animals are spawning on the ground/flat surface
+                animalSpawnPoint.position.z + Random.Range(-spawnRange, spawnRange));
 
-            // 生成动物Prefab
-            Instantiate(animalPrefab, spawnPos, animalPrefab.transform.rotation);
+            Instantiate(animalPrefab, spawnPos, Quaternion.identity);
         }
     }
 

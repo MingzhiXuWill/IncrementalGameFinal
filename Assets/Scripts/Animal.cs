@@ -7,12 +7,12 @@ public class Animal : MonoBehaviour
     public string animalName;
     public int cost;
     public float incomePerSec;
-    public float growthValue; // 成长值
-    public float growthRate; // 成长率，定义了动物成长的速度
 
-    private float totalIncome; // 累计收入
+    public float growthTimeMax = 10;
+    public float growthTimer = 0;
+    public float growthStageMax = 3;
+    public float growthStage = 1;
 
-    // 在Unity编辑器中设置动物的属性
     void Start()
     {
         Animator m_Animator = gameObject.GetComponent<Animator>();
@@ -21,23 +21,57 @@ public class Animal : MonoBehaviour
 
     void Update()
     {
-        // 假设我们想每秒调用一次来增加玩家的金钱
+        Grow();
+
         if (GameManager.instance != null)
         {
-            GameManager.instance.AddMoney(EarnIncome(Time.deltaTime));
+            GameManager.instance.AddMoney(GetTouristIncome());
+        }
+
+        if (Input.GetMouseButtonDown(0)) // 0 is the left mouse button
+        {
+            // Create a ray from the camera to our mouse position
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            // Check if the ray hits any collider (3D)
+            if (Physics.Raycast(ray, out hit))
+            {
+                // Check if the hit collider is this animal
+                if (hit.collider.gameObject == gameObject)
+                {
+                    Feed(); // Call the Feed function
+                }
+            }
         }
     }
 
-    public float EarnIncome(float deltaTime)
+    
+
+    public float GetTouristIncome()
     {
-        // 基于时间的收入计算，确保公平计算不同帧率下的收入
-        return incomePerSec * deltaTime;
+        return incomePerSec * Time.deltaTime;
+    }
+    
+    private void Grow()
+    {
+        if (growthTimer <= growthTimeMax)
+        {
+            growthTimer += Time.deltaTime;
+        }
     }
 
-    private void Grow(float deltaTime)
+    private bool IsFullyGrown()
     {
-        // 根据deltaTime增加成长值
-        growthValue += growthRate * deltaTime;
-        // 你可以在这里添加逻辑，比如当成长值达到一定水平时，动物可以"进化"或改变状态
+        return growthTimer >= growthTimeMax;
+    }
+
+    private void Feed()
+    {
+        if (growthStage < growthStageMax && IsFullyGrown())
+        {
+            growthStage++;
+            growthTimer = 0;
+        }
     }
 }
