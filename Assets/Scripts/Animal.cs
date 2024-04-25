@@ -107,6 +107,12 @@ public class Animal : MonoBehaviour
     
     private void Grow()
     {
+        if (growthStage >= growthStageMax)
+        {
+            feedIcon.SetActive(false);
+            return;
+        }
+
         if (growthTimer <= growthTimeMax)
         {
             if (feedIcon.gameObject.activeInHierarchy == true)

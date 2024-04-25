@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
     {
         if (moneyText != null)
         {
-            moneyText.text = $"Money: {playerMoney}";
+            moneyText.text = $"Money: {Mathf.FloorToInt(playerMoney)}";
         }
     }
 }
